@@ -16,6 +16,7 @@ import json
 import requests
 
 from obspy import read_inventory
+from obspy.core import UTCDateTime
 from config import config
 
 if __name__ == "__main__":
@@ -72,6 +73,11 @@ if __name__ == "__main__":
             segment_length = 24 * 3600
         else:
             segment_length = 3600
+
+        t0 = starttime
+        t1 = endtime
+        starttime = (UTCDateTime(starttime)+1.0).isoformat()
+        endtime = (UTCDateTime(endtime)-1.0).isoformat()
 
         # Prepare to read inventory using ObsPy
         requestOptions = (
