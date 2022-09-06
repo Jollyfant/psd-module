@@ -16,6 +16,7 @@ import json
 import requests
 
 from obspy import read_inventory
+from obspy.core import UTCDateTime
 from config import config
 
 if __name__ == "__main__":
@@ -73,6 +74,11 @@ if __name__ == "__main__":
         else:
             segment_length = 3600
 
+        t0 = starttime
+        t1 = endtime
+        starttime = (UTCDateTime(starttime)+1.0).isoformat()
+        endtime = (UTCDateTime(endtime)-1.0).isoformat()
+
         # Prepare to read inventory using ObsPy
         requestOptions = (
             config["API_URL"],
@@ -88,6 +94,9 @@ if __name__ == "__main__":
         except:
             continue
 
+        starttime = t0
+        endtime = t1
+
         # Verify that only one channel is returned
         contents = inventory.get_contents()
         if len(contents["networks"]) != 1 or len(contents["stations"]) != 1 or len(contents["channels"]) != 1:
@@ -95,6 +104,7 @@ if __name__ == "__main__":
 
         # Get the first response object
         response = inventory[0][0][0].response
+
 
         # Call evalresp to evaluate the response
         # NFFT must be same as in Welch's method!
